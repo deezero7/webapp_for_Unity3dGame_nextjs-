@@ -16,6 +16,13 @@ export default function Dashboard() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  const handleChange = (field: string, value: number) => {
+    setEditableData((prev: any) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   const securedGameDataUrl =
     "https://nodejs-server-for-unity3dgame-login-5vxc.onrender.com/u3d/getGameDataSecured";
   const saveGameDataUrl =
