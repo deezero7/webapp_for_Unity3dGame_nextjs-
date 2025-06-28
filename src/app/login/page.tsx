@@ -11,17 +11,20 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("https://nodejs-server-for-unity3dgame-login-5vxc.onrender.com/u3d/login", {
-        username,
-        password,
-      });
+      const res = await axios.post(
+        "https://nodejs-server-for-unity3dgame-login-5vxc.onrender.com/u3d/login",
+        {
+          username,
+          password,
+        }
+      );
       if (res.data.code === 0) {
         Cookies.set("token", res.data.userData.token, { expires: 7 });
         router.push("/dashboard");
       } else {
         alert(res.data.message);
       }
-    } catch (err) {
+    } catch {
       alert("Login failed. Check server or credentials.");
     }
   };
@@ -49,7 +52,7 @@ export default function LoginPage() {
         Login
       </button>
       <p className="mt-4 text-sm">
-        Don't have an account?{' '}
+        Don&apos;t have an account?{" "}
         <a href="/signup" className="text-blue-500 underline">
           Sign up
         </a>

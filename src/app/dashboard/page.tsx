@@ -2,25 +2,24 @@
 import { useEffect, useState, ChangeEvent } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import Image from "next/image";
+
+interface UserData {
+  username: string;
+  gold: number;
+  gems: number;
+  level: number;
+  profilePic: string | null;
+}
 
 export default function Dashboard() {
-  const [userData, setUserData] = useState<any>(null);
-  const [editableData, setEditableData] = useState<any>({
-    username: "",
-    gold: 0,
-    gems: 0,
-    level: 1,
-    profilePic: null,
-  });
+  const [editableData, setEditableData] = useState<UserData | null>(null);
   const [saving, setSaving] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const handleChange = (field: string, value: number) => {
-    setEditableData((prev: any) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleChange = (field: keyof UserData, value: number) => {
+    setEditableData((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
 
   const securedGameDataUrl =
@@ -34,30 +33,25 @@ export default function Dashboard() {
     const token = Cookies.get("token");
     if (!token) return;
 
-    // Step 1: Auto-login to refresh token
-    axios
-      .post(
-        "https://nodejs-server-for-unity3dgame-login-5vxc.onrender.com/u3d/autoLogin",
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then(async (res) => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.post(
+          "https://nodejs-server-for-unity3dgame-login-5vxc.onrender.com/u3d/autoLogin",
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
         if (res.data.code === 0) {
           const newToken = res.data.newToken;
           if (newToken) {
             Cookies.set("token", newToken, { expires: 7 });
           }
 
-          // Step 2: Fetch latest game data
-          const gameRes = await axios.get(
-            "https://nodejs-server-for-unity3dgame-login-5vxc.onrender.com/u3d/getGameDataSecured",
-            {
-              headers: { Authorization: `Bearer ${newToken || token}` },
-            }
-          );
+          const gameRes = await axios.get(securedGameDataUrl, {
+            headers: { Authorization: `Bearer ${newToken || token}` },
+          });
 
           if (gameRes.data.code === 0) {
-            setUserData(gameRes.data.userData);
             setEditableData(gameRes.data.userData);
           } else {
             alert("Failed to fetch game data");
@@ -66,11 +60,13 @@ export default function Dashboard() {
           alert("Auto login failed. Please log in again.");
           Cookies.remove("token");
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Auto-login or fetch failed:", err);
         Cookies.remove("token");
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   const saveChanges = async () => {
@@ -81,15 +77,14 @@ export default function Dashboard() {
       const res = await axios.put(saveGameDataUrl, {
         username: editableData.username,
         gameData: {
-          gold: editableData.gold || 0,
-          gems: editableData.gems || 0,
-          level: editableData.level || 1,
+          gold: editableData.gold,
+          gems: editableData.gems,
+          level: editableData.level,
         },
       });
 
       if (res.data.code === 0) {
         alert("Game data saved successfully!");
-        setUserData({ ...editableData });
       } else {
         alert("Failed to save data.");
       }
@@ -132,7 +127,6 @@ export default function Dashboard() {
       });
 
       if (res.data.code === 0) {
-        setUserData(res.data.userData);
         setEditableData(res.data.userData);
       }
     } catch (err) {
@@ -151,10 +145,12 @@ export default function Dashboard() {
       <h2 className="text-xl font-bold">Welcome, {editableData.username}</h2>
 
       {editableData.profilePic ? (
-        <img
+        <Image
           src={editableData.profilePic}
           alt="Profile"
-          className="w-32 h-32 rounded-full"
+          width={128}
+          height={128}
+          className="rounded-full"
         />
       ) : (
         <div className="text-gray-500">No profile picture uploaded</div>
@@ -164,7 +160,7 @@ export default function Dashboard() {
         <label className="block font-semibold">Gold:</label>
         <input
           type="number"
-          value={Number.isFinite(editableData.gold) ? editableData.gold : 0}
+          value={editableData.gold}
           onChange={(e) => handleChange("gold", parseInt(e.target.value) || 0)}
           className="border rounded px-2 py-1 w-full"
         />
@@ -174,7 +170,7 @@ export default function Dashboard() {
         <label className="block font-semibold">Gems:</label>
         <input
           type="number"
-          value={Number.isFinite(editableData.gems) ? editableData.gems : 0}
+          value={editableData.gems}
           onChange={(e) => handleChange("gems", parseInt(e.target.value) || 0)}
           className="border rounded px-2 py-1 w-full"
         />
@@ -184,7 +180,7 @@ export default function Dashboard() {
         <label className="block font-semibold">Level:</label>
         <input
           type="number"
-          value={Number.isFinite(editableData.level) ? editableData.level : 1}
+          value={editableData.level}
           onChange={(e) => handleChange("level", parseInt(e.target.value) || 1)}
           className="border rounded px-2 py-1 w-full"
         />
