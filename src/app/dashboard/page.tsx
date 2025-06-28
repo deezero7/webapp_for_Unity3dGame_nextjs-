@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, ChangeEvent } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -13,6 +14,7 @@ interface UserData {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const [editableData, setEditableData] = useState<UserData | null>(null);
   const [saving, setSaving] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -211,6 +213,15 @@ export default function Dashboard() {
         >
           {uploading ? "Uploading..." : "Upload Image"}
         </button>
+
+        <div>
+          <button
+            onClick={() => router.push("/login")}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          >
+            Go to Login Page
+          </button>
+        </div>
       </div>
     </div>
   );
