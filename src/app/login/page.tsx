@@ -20,7 +20,7 @@ export default function LoginPage() {
       );
       if (res.data.code === 0) {
         Cookies.set("token", res.data.userData.token, { expires: 7 });
-        router.push("/dashboard");
+        router.push("./dashboard");
       } else {
         alert(res.data.message);
       }
@@ -53,7 +53,7 @@ export default function LoginPage() {
       </button>
       <p className="mt-4 text-sm">
         Don&apos;t have an account?{" "}
-        <a href="/signup" className="text-blue-500 underline">
+        <a href="./signup" className="text-blue-500 underline">
           Sign up
         </a>
       </p>

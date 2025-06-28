@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  basePath: "/webapp_for_Unity3dGame_nextjs-",
 };
 
 export default nextConfig;
