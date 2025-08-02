@@ -57,6 +57,12 @@ export default function LoginPage() {
           Sign up
         </a>
       </p>
+      <p className="mt-4 text-sm">
+        Forgot Password ?{" "}
+        <a href="./forgotPasswordPage" className="text-blue-500 underline">
+          Reset password
+        </a>
+      </p>
     </div>
   );
 }
