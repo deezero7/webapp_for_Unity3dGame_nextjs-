@@ -21,7 +21,6 @@ export default function ResetPasswordPage() {
     const data = await res.json();
     setMessage(data.message);
     if (data.code === 0) {
-      // Optional: redirect to login after a few seconds
       setTimeout(() => router.push("/login"), 3000);
     }
   }
@@ -36,7 +35,10 @@ export default function ResetPasswordPage() {
         onChange={(e) => setNewPassword(e.target.value)}
         className="w-full p-2 mb-4 border"
       />
-      <button onClick={handleReset} className="w-full bg-blue-500 text-white p-2">
+      <button
+        onClick={handleReset}
+        className="w-full bg-blue-500 text-white p-2"
+      >
         Reset Password
       </button>
       {message && <p className="mt-4 text-sm">{message}</p>}
