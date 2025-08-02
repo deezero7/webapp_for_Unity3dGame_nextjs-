@@ -60,7 +60,7 @@ export default function ResetPasswordClient() {
       } else {
         setError(data.message || "Reset failed.");
       }
-    } catch (err) {
+    } catch {
       setError("Something went wrong");
     }
   };
