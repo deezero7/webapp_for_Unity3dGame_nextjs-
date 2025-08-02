@@ -1,47 +1,14 @@
-"use client";
+// app/forgotpassword/page.tsx
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense } from "react";
+import ResetPasswordPage from "./ResetPasswordPage";
 
-export default function ResetPasswordPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+export const dynamic = "force-dynamic"; // Optional: disables prerendering if needed
 
-  const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState("");
-
-  async function handleReset() {
-    const res = await fetch("/api/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, newPassword }),
-    });
-
-    const data = await res.json();
-    setMessage(data.message);
-    if (data.code === 0) {
-      setTimeout(() => router.push("/login"), 3000);
-    }
-  }
-
+export default function ForgotPasswordPage() {
   return (
-    <div className="p-4 max-w-md mx-auto mt-10 border rounded">
-      <h1 className="text-xl font-bold mb-4">Reset Password</h1>
-      <input
-        type="password"
-        placeholder="New Password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        className="w-full p-2 mb-4 border"
-      />
-      <button
-        onClick={handleReset}
-        className="w-full bg-blue-500 text-white p-2"
-      >
-        Reset Password
-      </button>
-      {message && <p className="mt-4 text-sm">{message}</p>}
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordPage />
+    </Suspense>
   );
 }
